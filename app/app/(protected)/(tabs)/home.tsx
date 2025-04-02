@@ -3,7 +3,9 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function Tab() {
   return (
     <View style={styles.container}>
-      <Text>Home page, working on it</Text>
+      <Text>
+        Not important for MVP
+      </Text>
     </View>
   );
 }
