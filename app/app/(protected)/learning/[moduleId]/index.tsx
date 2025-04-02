@@ -39,12 +39,16 @@ export default function ModuleUnitsPage() {
 
   return (
     <View style={styles.container}>
+      {/* Back button */}
+      <Pressable onPress={() => router.navigate("/learn")} style={{ marginBottom: 16 }}>
+        <Text style={{ color: '#007AFF' }}>Back to Modules</Text>
+      </Pressable>
       <FlatList
         data={units}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Pressable
-            onPress={() => router.push(`/learn/${moduleId}/unit/${item.id}`)}
+            onPress={() => router.push(`/learning/${moduleId}/unit/${item.id}`)}
             style={styles.unitItem}
           >
             <Text style={styles.unitTitle}>{item.title}</Text>

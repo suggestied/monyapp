@@ -35,14 +35,14 @@ export default function LearnModulesPage() {
   }
 
   return (
-    <FlatList
+      <FlatList
       data={modules}
       keyExtractor={(item) => item.id}
       contentContainerStyle={{ padding: 16 }}
       renderItem={({ item }) => (
         <Pressable
           style={styles.card}
-          onPress={() => router.push(`/learn/${item.id}`)}
+          onPress={() => router.push(`/learning/${item.id}`)}
         >
           <Text style={styles.title}>{item.title}</Text>
           {item.topic && <Text style={styles.topic}>Topic: {item.topic}</Text>}
