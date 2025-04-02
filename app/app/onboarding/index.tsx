@@ -1,52 +1,109 @@
-import { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
-import { useRouter } from 'expo-router'
-import { supabase } from 'lib/supabase'
+import { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
+
+type TextAnswer = {
+  placeholder?: string;
+  input: string;
+};
+
+type DateAnswer = {
+  date: string;
+};
+
+type MultipleAnswer = {
+  options: {
+    emoji: string;
+    text: string;
+  }[];
+};
+
+type Question = {
+  title: string;
+  description?: string;
+  type: 'text' | 'date' | 'multiple';
+  answer: TextAnswer | DateAnswer | MultipleAnswer;
+};
+
+const questions: Question[] = [
+  {
+    title: 'What is your name?',
+    type: 'text',
+    answer: {
+      placeholder: 'Your name',
+      input: '',
+    },
+  },
+  {
+    title: 'What is your birthday?',
+    description: 'We need your age to provide a personalized experience.',
+    type: 'text',
+    answer: {
+      placeholder: 'Your age',
+      input: '',
+    },
+  },
+];
 
 export default function OnboardingScreen() {
-  const router = useRouter()
-  const [name, setName] = useState('')
-  const [age, setAge] = useState('')
+  const router = useRouter();
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
 
-  const handleFinish = async () => {
-    const user = (await supabase.auth.getUser()).data.user
-    if (!user) return Alert.alert('Error', 'No user session found')
+  const currentQuestion = questions[currentQuestionIndex];
 
-    const { error } = await supabase.from('users').upsert({
-      id: user.id,
-      name,
-      age: parseInt(age),
-    })
+  const handleNext = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      handleFinish();
+    }
+  };
 
-    if (error) return Alert.alert('Error', error.message)
-    router.replace('/home')
-  }
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
+  const handleFinish = async () => {};
+
+  const handleInputChange = (text: string) => {
+    setAnswers({ ...answers, [currentQuestionIndex]: text });
+  };
 
   return (
-    <View className="flex-1 justify-center px-6 bg-white">
-      <Text className="mb-6 text-2xl font-bold text-center">Tell us about you</Text>
+    <View className="flex-1 justify-center bg-white px-6">
+      <Text className="mb-6 text-center text-2xl font-bold">{currentQuestion.title}</Text>
+      {currentQuestion.description && (
+        <Text className="mb-4 text-center text-gray-600">{currentQuestion.description}</Text>
+      )}
 
-      <TextInput
-        className="p-4 mb-4 rounded-lg border"
-        placeholder="Your name"
-        value={name}
-        onChangeText={setName}
-      />
+      {currentQuestion.type === 'text' && (
+        <TextInput
+          className="mb-4 rounded-lg border p-4"
+          placeholder={
+            currentQuestion.type === 'text' && 'placeholder' in currentQuestion.answer
+              ? currentQuestion.answer.placeholder || ''
+              : ''
+          }
+          value={answers[currentQuestionIndex] || ''}
+          onChangeText={handleInputChange}
+        />
+      )}
 
-      <TextInput
-        className="p-4 mb-4 rounded-lg border"
-        placeholder="Age"
-        value={age}
-        onChangeText={setAge}
-        keyboardType="numeric"
-      />
-
-      <TouchableOpacity
-        className="p-4 bg-purple-600 rounded-lg"
-        onPress={handleFinish}
-      >
-        <Text className="text-center text-white">Finish</Text>
-      </TouchableOpacity>
+      <View className="flex-row justify-between">
+        {currentQuestionIndex > 0 && (
+          <TouchableOpacity className="rounded-lg bg-gray-300 p-4" onPress={handleBack}>
+            <Text className="text-center text-black">Back</Text>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity className="rounded-lg bg-purple-600 p-4" onPress={handleNext}>
+          <Text className="text-center text-white">
+            {currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next'}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
-  )
+  );
 }
