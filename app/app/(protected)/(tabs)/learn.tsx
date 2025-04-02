@@ -3,6 +3,7 @@ import { View, Text, FlatList, Pressable, ActivityIndicator, StyleSheet } from '
 import { supabase } from 'lib/supabase'
 import { LearningModules } from 'types/global'
 import { useRouter } from 'expo-router'
+import ModuleCard from 'components/ModuleCard'
 
 export default function LearnModulesPage() {
   const [modules, setModules] = useState<LearningModules[]>([])
@@ -40,13 +41,10 @@ export default function LearnModulesPage() {
       keyExtractor={(item) => item.id}
       contentContainerStyle={{ padding: 16 }}
       renderItem={({ item }) => (
-        <Pressable
-          style={styles.card}
-          onPress={() => router.push(`/learning/${item.id}`)}
-        >
-          <Text style={styles.title}>{item.title}</Text>
-          {item.topic && <Text style={styles.topic}>Topic: {item.topic}</Text>}
-        </Pressable>
+       <ModuleCard
+       module={item}
+       onPress={() => router.push(`/learning/${item.id}`)}
+       />
       )}
     />
   )

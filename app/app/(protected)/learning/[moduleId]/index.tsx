@@ -3,6 +3,7 @@ import { View, Text, FlatList, Pressable, ActivityIndicator, StyleSheet } from '
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { supabase } from 'lib/supabase'
 import { LearningUnits } from 'types/global'
+import UnitItem from 'components/UnitItem'
 
 export default function ModuleUnitsPage() {
   const { moduleId } = useLocalSearchParams()
@@ -47,13 +48,10 @@ export default function ModuleUnitsPage() {
         data={units}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Pressable
-            onPress={() => router.push(`/learning/${moduleId}/unit/${item.id}`)}
-            style={styles.unitItem}
-          >
-            <Text style={styles.unitTitle}>{item.title}</Text>
-            <Text style={styles.unitType}>{item.type}</Text>
-          </Pressable>
+         <UnitItem
+         unit={item}
+         onPress={() => router.push(`/learning/${moduleId}/unit/${item.id}`)}
+         />
         )}
       />
     </View>
