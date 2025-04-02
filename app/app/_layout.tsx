@@ -3,7 +3,7 @@ import '../global.css'
 import { ReactNode } from 'react'
 import { Slot } from 'expo-router'
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default function Layout() {
   return (
     <Slot />
   )
