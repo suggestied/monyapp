@@ -10,7 +10,7 @@ export default function OnboardingScreen() {
       <View className="mb-5 w-full">
         <Button
           title="Get Started"
-          onPress={() => router.push('/home')}
+          onPress={() => router.push('/onboarding')}
         />
       </View>
 
