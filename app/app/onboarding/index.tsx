@@ -19,6 +19,7 @@ type MultipleAnswer = {
   options: {
     emoji: string;
     text: string;
+    subtext?: string;
   }[];
 };
 
@@ -26,58 +27,100 @@ type Question = {
   title: string;
   description?: string;
   answer: TextAnswer | DateAnswer | MultipleAnswer;
+  avatar?: string;
 };
 
-const questions: Question[] = [
-  {
-    title: 'What is your name?',
-    answer: {
-      type: 'text',
-      placeholder: 'Your name',
-      input: '',
-    },
-  },
-  {
-    title: 'When is your birthday?',
-    description: 'We need your age to provide a personalized experience.',
-    answer: {
-      type: 'date',
-      date: '',
-    },
-  },
-  {
-    title: 'What is your favorite color?',
-    answer: {
-      type: 'multiple',
-      options: [
-        { emoji: '❤️', text: 'Red' },
-        { emoji: '💙', text: 'Blue' },
-        { emoji: '💚', text: 'Green' },
-        { emoji: '💛', text: 'Yellow' },
-      ],
-    },
-  },
-];
-
-export default function OnboardingScreen() {
+export default function Onboarding() {
   const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const slideAnim = useRef(new Animated.Value(0)).current;
+
+  const questions: Question[] = [
+    {
+      title: 'What is your name?',
+      answer: {
+        type: 'text',
+        placeholder: 'Your name',
+        input: '',
+      },
+      avatar: 'happy',
+    },
+    {
+      title: 'When is your birthday?',
+      description: 'We need your age to provide a personalized experience.',
+      answer: {
+        type: 'date',
+        date: '',
+      },
+      avatar: 'star',
+    },
+    {
+      title: 'What is your goal?',
+      answer: {
+        type: 'multiple',
+        options: [
+          {
+            emoji: '📈',
+            text: 'Investing',
+          },
+          {
+            emoji: '💰',
+            text: 'Budgeting',
+          },
+          {
+            emoji: '📊',
+            text: 'Saving',
+          },
+          {
+            emoji: '🏠',
+            text: 'Buying a home',
+          },
+          {
+            emoji: '💳',
+            text: 'Other',
+          },
+        ],
+      },
+      avatar: 'money',
+    },
+    {
+      title: 'How much do you know about finance?',
+      description: 'This helps us tailor the content to your level.',
+      answer: {
+        type: 'multiple',
+        options: [
+          {
+            emoji: '😐',
+            text: 'Beginner',
+          },
+          {
+            emoji: '🙂',
+            text: 'Intermediate',
+          },
+          {
+            emoji: '😎',
+            text: 'Advanced',
+          },
+        ],
+      },
+      avatar: 'strong',
+    },
+  ];
 
   const currentQuestion = questions[currentQuestionIndex];
 
   const handleNext = () => {
     if (currentQuestionIndex < questions.length - 1) {
       Animated.timing(slideAnim, {
-        toValue: -1, // Slide out to the left
+        toValue: -1,
         duration: 300,
         useNativeDriver: true,
       }).start(() => {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
-        slideAnim.setValue(1); // Reset position to slide in from the right
+        slideAnim.setValue(1);
         Animated.timing(slideAnim, {
-          toValue: 0, // Slide into position
+          toValue: 0,
           duration: 300,
           useNativeDriver: true,
         }).start();
@@ -90,14 +133,14 @@ export default function OnboardingScreen() {
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
       Animated.timing(slideAnim, {
-        toValue: 1, // Slide out to the right
+        toValue: 1,
         duration: 300,
         useNativeDriver: true,
       }).start(() => {
         setCurrentQuestionIndex(currentQuestionIndex - 1);
-        slideAnim.setValue(-1); // Reset position to slide in from the left
+        slideAnim.setValue(-1);
         Animated.timing(slideAnim, {
-          toValue: 0, // Slide into position
+          toValue: 0,
           duration: 300,
           useNativeDriver: true,
         }).start();
@@ -105,7 +148,9 @@ export default function OnboardingScreen() {
     }
   };
 
-  const handleFinish = async () => {};
+  const handleFinish = async () => {
+    router.push('/home');
+  };
 
   const handleInputChange = (text: string) => {
     setAnswers({ ...answers, [currentQuestionIndex]: text });
@@ -131,7 +176,7 @@ export default function OnboardingScreen() {
             padding: 16,
             opacity: slideAnim.interpolate({
               inputRange: [-1, 0, 1],
-              outputRange: [0, 1, 0], // Fade in and out
+              outputRange: [0, 1, 0],
             }),
           }}>
           <TouchableOpacity onPress={handleBack}>
@@ -147,7 +192,7 @@ export default function OnboardingScreen() {
             {
               translateX: slideAnim.interpolate({
                 inputRange: [-1, 0, 1],
-                outputRange: [-500, 0, 500], // Adjust slide distance as needed
+                outputRange: [-500, 0, 500],
               }),
             },
           ],
